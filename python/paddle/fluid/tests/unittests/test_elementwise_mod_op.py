@@ -16,7 +16,7 @@ import random
 import unittest
 
 import numpy as np
-from op_test import OpTest
+from op_test import OpTest,convert_float_to_uint16
 
 import paddle
 import paddle.fluid as fluid
@@ -107,6 +107,7 @@ class TestElementwiseModOpFloat(TestElementwiseModOp):
 
 
 class TestElementwiseModOpFp16(TestElementwiseModOp):
+
     def init_dtype(self):
         self.dtype = np.float16
 
@@ -120,7 +121,6 @@ class TestElementwiseModOpFp16(TestElementwiseModOp):
             self.check_output(check_eager=True)
         else:
             self.check_output(check_eager=False)
-
 
 class TestElementwiseModOpDouble(TestElementwiseModOpFloat):
     def init_dtype(self):
@@ -166,10 +166,65 @@ class TestRemainderOp(unittest.TestCase):
             z_expected = np.array([0, 1, 1, -1])
             np.testing.assert_allclose(z_expected, z.numpy(), rtol=1e-05)
 
+class TestRemainderOp(OpTest):
+    def setUp(self):
+        self.op_type = "remainder"
+        self.dtype = np.float32
+        x = np.random.uniform(-10, 10, [20, 30]).astype(self.dtype)
+        y = np.random.uniform(-10, 10, [20, 30]).astype(self.dtype)
+        self.inputs = {
+            'X': x,
+            'Y': y
+        }
+        out = np.remainder(self.inputs['X'], self.inputs['Y'])
+        self.outputs = {'Out': out}
 
-class TestRemainderInplaceOp(TestRemainderOp):
-    def _executed_api(self, x, y, name=None):
-        return x.remainder_(y, name)
+    def test_check_output(self):
+        self.check_output()
+
+    def test_check_grad(self):
+        self.check_grad(['X', 'Y'], 'Out')
+
+class TestRemainderFP16Op(OpTest):
+    def setUp(self):
+        self.op_type = "remainder"
+        self.dtype = np.float16
+        x = np.random.uniform(-10, 10, [20, 30]).astype(self.dtype)
+        y = np.random.uniform(-10, 10, [20, 30]).astype(self.dtype)
+        self.inputs = {
+            'X': x,
+            'Y': y
+        }
+        out = np.remainder(self.inputs['X'], self.inputs['Y'])
+        self.outputs = {'Out': out}
+
+    def test_check_output(self):
+        self.check_output()
+
+    def test_check_grad(self):
+        self.check_grad(['X', 'Y'], 'Out')
+
+class TestRemainderBF16(OpTest):
+    def setUp(self):
+        self.op_type = "remainder"
+        self.dtype = np.uint16
+        x = np.random.uniform(-10, 10, [20, 30]).astype(np.float32)
+        y = np.random.uniform(-10, 10, [20, 30]).astype(np.float32)
+        self.inputs = {
+            'X': convert_float_to_uint16(x),
+            'Y': convert_float_to_uint16(y)
+        }
+        out = np.remainder(self.inputs['X'], self.inputs['Y'])
+        self.outputs = {'Out': convert_float_to_uint16(out)}
+
+    def test_check_output(self):
+        self.check_output()
+
+    def test_check_grad(self):
+        self.check_grad(['X', 'Y'], 'Out')
+
+if __name__ == '__main__':
+    unittest.main()
 
 
 class TestRemainderInplaceBroadcastSuccess(unittest.TestCase):
