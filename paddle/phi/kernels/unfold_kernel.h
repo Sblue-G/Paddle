@@ -16,6 +16,9 @@
 
 #include "paddle/phi/core/dense_tensor.h"
 #include "paddle/phi/core/device_context.h"
+#include "paddle/phi/core/device_context.h"
+#include "paddle/phi/common/float16.h"
+#include "paddle/phi/common/bfloat16.h"
 
 namespace phi {
 
@@ -29,3 +32,5 @@ void UnfoldKernel(const Context& ctx,
                   DenseTensor* out);
 
 }  // namespace phi
+
+PD_REGISTER_KERNEL(unfold, GPU, ALL_LAYOUT, phi::UnfoldKernel, float, double, phi::dtype::float16, phi::dtype::bfloat16) {}

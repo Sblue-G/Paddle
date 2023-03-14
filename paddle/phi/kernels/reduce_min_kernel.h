@@ -17,6 +17,7 @@
 #include "paddle/phi/common/int_array.h"
 #include "paddle/phi/core/dense_tensor.h"
 
+
 namespace phi {
 
 template <typename T, typename Context>
@@ -35,3 +36,5 @@ void MinKernel(const Context& dev_ctx,
                DenseTensor* out);
 
 }  // namespace phi
+
+PD_REGISTER_KERNEL(unfold, GPU, ALL_LAYOUT, phi::UnfoldKernel, float, double, phi::dtype::float16, phi::dtype::bfloat16) {}

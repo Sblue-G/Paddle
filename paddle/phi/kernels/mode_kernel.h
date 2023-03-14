@@ -15,6 +15,7 @@
 #pragma once
 
 #include "paddle/phi/core/dense_tensor.h"
+#include "paddle/phi/common/scalar.h"
 
 namespace phi {
 
@@ -27,3 +28,4 @@ void ModeKernel(const Context& dev_ctx,
                 DenseTensor* indices);
 
 }  // namespace phi
+PD_REGISTER_KERNEL(mode, GPU, ALL_LAYOUT, phi::ModeKernel, float, double, int, int64_t, phi::dtype::float16, phi::dtype::bfloat16){}

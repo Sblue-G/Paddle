@@ -126,4 +126,4 @@ void ModeKernel(const Context& dev_ctx,
 }  // namespace phi
 
 PD_REGISTER_KERNEL(
-    mode, CPU, ALL_LAYOUT, phi::ModeKernel, float, double, int32_t, int64_t) {}
+    mode, CPU, ALL_LAYOUT, phi::ModeKernel, float, double, int32_t, int64_t, phi::dtype::float16, phi::dtype::bfloat16) {}
